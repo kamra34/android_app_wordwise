@@ -1,16 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:gravity="center">
+    android:background="#D8B5B5"> <!-- Setting background color here -->
 
-    <ImageView
-        android:id="@+id/imgSwedishFlag"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/swedish_flag"
-        android:layout_centerInParent="true"
-        android:contentDescription="Swedish Flag"/>
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        app:columnCount="2">
 
-</RelativeLayout>
+        <!-- Swedish Flag -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgSwedishFlag"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/swedish_flag"
+            android:contentDescription="@string/swedish_flag"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal" />
+
+        <!-- Persian Flag -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgPersianFlag"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/persian_flag"
+            android:contentDescription="@string/persian_flag"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal" />
+
+        <!-- You can add more flags for more languages as needed -->
+
+    </androidx.gridlayout.widget.GridLayout>
+</ScrollView>

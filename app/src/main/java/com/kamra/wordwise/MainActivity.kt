@@ -13,12 +13,6 @@ import androidx.appcompat.widget.Toolbar
 class MainActivity : AppCompatActivity() {
 
     private lateinit var wordsAdapter: WordsAdapter
-    private val wordsList = listOf(
-        Word("Hej", "A Swedish greeting meaning Hello."),
-        Word("Tack", "A Swedish word meaning Thank you."),
-        Word("Bil", "Swedish term for Car."),
-        Word("Hus", "A Swedish term for House.")
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +21,9 @@ class MainActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.main_toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Select Language"
+
+        val selectedLanguage = intent.getStringExtra("chosenLanguage")
+        val wordsList = getWordsForLanguage(selectedLanguage)
 
         // Initialize the RecyclerView
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
@@ -53,6 +50,23 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun getWordsForLanguage(language: String?): List<Word> {
+        return when(language) {
+            "Swedish" -> listOf(
+                Word("Hej", "A Swedish greeting meaning Hello."),
+                Word("Tack", "A Swedish word meaning Thank you."),
+                Word("Bil", "Swedish term for Car."),
+                Word("Hus", "A Swedish term for House.")
+            )
+            "Persian" -> listOf(
+                // Replace with your Persian words
+                Word("Salam", "A Persian greeting meaning Hello."),
+                Word("Merci", "A Persian word meaning Thank you.")
+            )
+            else -> emptyList()
         }
     }
 }
