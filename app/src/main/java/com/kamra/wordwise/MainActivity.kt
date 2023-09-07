@@ -6,6 +6,8 @@ import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kamra.wordwise.models.Word
+import android.view.MenuItem
+import androidx.appcompat.widget.Toolbar
 
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +24,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val toolbar: Toolbar = findViewById(R.id.main_toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = "Select Language"
+
         // Initialize the RecyclerView
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)  // This sets how the items will be displayed
@@ -34,7 +40,19 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val actionBar = supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
 
         recyclerView.adapter = wordsAdapter
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()  // Call this method to finish the current activity and return to the previous one
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
