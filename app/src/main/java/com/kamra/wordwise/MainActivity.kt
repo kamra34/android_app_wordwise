@@ -1,5 +1,8 @@
 package com.kamra.wordwise
 
+import android.app.AlertDialog
+import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
@@ -9,13 +12,14 @@ import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import android.util.Log
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var wordsAdapter: WordsAdapter
     private lateinit var chosenLanguage: String
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("MainActivity", "Inside onCreate()")
@@ -31,8 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize the RecyclerView
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager =
-            LinearLayoutManager(this)  // This sets how the items will be displayed
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
         wordsAdapter = WordsAdapter(this) { word ->
             val intent = Intent(this@MainActivity, WordDetailActivity::class.java).apply {
@@ -47,6 +50,12 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.adapter = wordsAdapter
 
+        // Floating Action Button
+        val fab: FloatingActionButton = findViewById(R.id.fab_add_word)
+        fab.setOnClickListener {
+            openAddWordDialog()
+        }
+
         getWords()
     }
 
@@ -55,10 +64,9 @@ class MainActivity : AppCompatActivity() {
 
         return when (item.itemId) {
             android.R.id.home -> {
-                onBackPressed()  // Call this method to finish the current activity and return to the previous one
+                onBackPressed()
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -74,11 +82,43 @@ class MainActivity : AppCompatActivity() {
                 wordsAdapter.notifyDataSetChanged()
             }
         } else {
-            // Default behavior when no language is specified
             db.wordDao().getAllWords().observe(this) { words ->
                 wordsAdapter.words = words.toMutableList()
                 wordsAdapter.notifyDataSetChanged()
             }
         }
+    }
+
+    private fun openAddWordDialog() {
+        val dialog = AlertDialog.Builder(this)
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_add_word, null)
+        dialog.setView(dialogView)
+
+        val editTextWord = dialogView.findViewById<EditText>(R.id.editTextWord)
+        val editTextDefinition = dialogView.findViewById<EditText>(R.id.editTextDefinition)
+
+        dialog.setTitle("Add New Word")
+        dialog.setPositiveButton("Add") { _, _ ->
+            val word = editTextWord.text.toString().trim()
+            val definition = editTextDefinition.text.toString().trim()
+
+            if (word.isNotEmpty() && definition.isNotEmpty()) {
+                saveWordToDatabase(word, definition)
+            } else {
+                Toast.makeText(this, "Please enter valid details", Toast.LENGTH_SHORT).show()
+            }
+        }
+        dialog.setNegativeButton("Cancel") { _, _ -> }
+
+        dialog.create().show()
+    }
+
+    private fun saveWordToDatabase(word: String, definition: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val wordEntry = Word(term = word, definition = definition, language = chosenLanguage)
+            AppDatabase.getDatabase(this@MainActivity).wordDao().insert(wordEntry)
+        }
+        Toast.makeText(this, "Word added successfully", Toast.LENGTH_SHORT).show()
     }
 }
