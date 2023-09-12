@@ -6,12 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.kamra.wordwise.models.Word
 
 class WordsAdapter(private val context: Context,
-                   private val words: List<Word>,
                    private val clickListener: (Word) -> Unit)
     : RecyclerView.Adapter<WordsAdapter.WordViewHolder>() {
+
+    var words: MutableList<Word> = mutableListOf()
+        set(value) {
+            field = value
+            notifyDataSetChanged()  // This will notify the RecyclerView to refresh with the new data
+        }
 
     // This class holds references to the views of item_word.xml
     inner class WordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
