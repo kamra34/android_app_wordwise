@@ -25,12 +25,15 @@
 
             <EditText
                 android:id="@+id/etWordDetailTerm"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
                 android:hint="Enter word"
-                android:editable="false"
-                android:inputType="text" />
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="false"
+                android:layout_marginTop="16dp" />
 
             <EditText
                 android:id="@+id/etWordDetailDefinition"

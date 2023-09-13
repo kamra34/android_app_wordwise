@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             },
             longClickListener = { word ->
-                confirmDeleteWord(word)
+                showWordOptionsDialog(word)
                 true
             })
 
@@ -62,6 +62,55 @@ class MainActivity : AppCompatActivity() {
         }
 
         getWords()
+    }
+    private fun showWordOptionsDialog(word: Word) {
+        AlertDialog.Builder(this)
+            .setTitle("Choose an action")
+            .setItems(arrayOf("Edit", "Delete")) { _, which ->
+                when (which) {
+                    0 -> editWordDialog(word)
+                    1 -> confirmDeleteWord(word)
+                }
+            }
+            .show()
+    }
+
+    private fun editWordDialog(word: Word) {
+        val dialog = AlertDialog.Builder(this)
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_add_word, null)
+        dialog.setView(dialogView)
+
+        val editTextWord = dialogView.findViewById<EditText>(R.id.editTextWord)
+        val editTextDefinition = dialogView.findViewById<EditText>(R.id.editTextDefinition)
+
+        editTextWord.setText(word.term)
+        editTextDefinition.setText(word.definition)
+
+        dialog.setTitle("Edit Word")
+        dialog.setPositiveButton("Update") { _, _ ->
+            val updatedWord = editTextWord.text.toString().trim()
+            val updatedDefinition = editTextDefinition.text.toString().trim()
+
+            if (updatedWord.isNotEmpty() && updatedDefinition.isNotEmpty()) {
+                updateWordInDatabase(word, updatedWord, updatedDefinition)
+            } else {
+                Toast.makeText(this, "Please enter valid details", Toast.LENGTH_SHORT).show()
+            }
+        }
+        dialog.setNegativeButton("Cancel") { _, _ -> }
+
+        dialog.create().show()
+    }
+    private fun updateWordInDatabase(oldWord: Word, newWord: String, newDefinition: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            oldWord.term = newWord
+            oldWord.definition = newDefinition
+            AppDatabase.getDatabase(this@MainActivity).wordDao().updateWord(oldWord)
+            runOnUiThread {
+                Toast.makeText(this@MainActivity, "Word updated successfully", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun confirmDeleteWord(word: Word) {
