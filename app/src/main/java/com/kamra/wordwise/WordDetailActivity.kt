@@ -1,40 +1,82 @@
 package com.kamra.wordwise
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
+import android.widget.EditText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class WordDetailActivity : AppCompatActivity() {
+
+    private lateinit var etWordDetailTerm: EditText
+    private lateinit var etWordDetailDefinition: EditText
+    private var isEditable = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_word_detail)
 
-        // Retrieve the TextView from the layout
-        val tvWordDetail: TextView = findViewById(R.id.tvWordDetail)
-
-        // Retrieve the word details from the intent
-        val wordDetails = intent.getStringExtra("wordDetails")
+        etWordDetailTerm = findViewById(R.id.etWordDetailTerm)
+        etWordDetailDefinition = findViewById(R.id.etWordDetailDefinition)
 
         val wordTerm = intent.getStringExtra("word")
         val wordDefinition = intent.getStringExtra("definition")
 
-        // Set the word details to the TextView
-        tvWordDetail.text = "$wordTerm: $wordDefinition"
+        etWordDetailTerm.setText(wordTerm)
+        etWordDetailDefinition.setText(wordDefinition)
 
-        // initialize and set the back custom toolbar, as the support action bar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "Words List"
-
-        // Enable the Up (Back) button
-        val actionBar: ActionBar? = supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Word Details"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    // This function will finish the activity when the back button is pressed
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val editItem = menu?.add(Menu.NONE, R.id.action_edit_save, Menu.NONE, "")
+        editItem?.setIcon(android.R.drawable.ic_menu_edit)
+        editItem?.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_edit_save -> {
+                if (isEditable) {
+                    // Save the word to the database
+                    updateWordInDatabase(etWordDetailTerm.text.toString(), etWordDetailDefinition.text.toString())
+                    isEditable = false
+                    etWordDetailTerm.isEnabled = false
+                    etWordDetailDefinition.isEnabled = false
+                    item.setIcon(android.R.drawable.ic_menu_edit) // change icon to edit icon
+                } else {
+                    isEditable = true
+                    etWordDetailTerm.isEnabled = true
+                    etWordDetailDefinition.isEnabled = true
+                    item.setIcon(android.R.drawable.ic_menu_save)
+                }
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun updateWordInDatabase(term: String, definition: String) {
+        GlobalScope.launch(Dispatchers.IO) {
+            val db = AppDatabase.getDatabase(applicationContext)
+            val word = db.wordDao().getWordByTerm(term)
+            word?.let {
+                it.term = term
+                it.definition = definition
+                db.wordDao().updateWord(it)
+            }
+        }
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
