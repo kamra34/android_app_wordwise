@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Delete
 
 @Dao
 interface WordDao {
@@ -27,4 +28,6 @@ interface WordDao {
     @Query("SELECT * FROM word_table WHERE language = :language")
     fun getWordsByLanguage(language: String): LiveData<List<Word>>
 
+    @Delete
+    fun delete(word: Word)
 }

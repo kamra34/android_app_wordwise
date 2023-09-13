@@ -37,13 +37,18 @@ class MainActivity : AppCompatActivity() {
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        wordsAdapter = WordsAdapter(this) { word ->
-            val intent = Intent(this@MainActivity, WordDetailActivity::class.java).apply {
-                putExtra("word", word.term)
-                putExtra("definition", word.definition)
-            }
-            startActivity(intent)
-        }
+        wordsAdapter = WordsAdapter(this,
+            clickListener = { word ->
+                val intent = Intent(this@MainActivity, WordDetailActivity::class.java).apply {
+                    putExtra("word", word.term)
+                    putExtra("definition", word.definition)
+                }
+                startActivity(intent)
+            },
+            longClickListener = { word ->
+                confirmDeleteWord(word)
+                true
+            })
 
         val actionBar = supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
@@ -57,6 +62,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         getWords()
+    }
+
+    private fun confirmDeleteWord(word: Word) {
+        AlertDialog.Builder(this)
+            .setTitle("Delete Word")
+            .setMessage("Are you sure you want to delete '${word.term}' and its definition?")
+            .setPositiveButton("Delete") { _, _ ->
+                deleteWordFromDatabase(word)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun deleteWordFromDatabase(word: Word) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            AppDatabase.getDatabase(this@MainActivity).wordDao().delete(word)
+            runOnUiThread {
+                Toast.makeText(this@MainActivity, "Word deleted successfully", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -7,9 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class WordsAdapter(private val context: Context,
-                   private val clickListener: (Word) -> Unit)
-    : RecyclerView.Adapter<WordsAdapter.WordViewHolder>() {
+class WordsAdapter(
+    private val context: Context,
+    private val clickListener: (Word) -> Unit,
+    private val longClickListener: (Word) -> Boolean  // new lambda for long click
+) : RecyclerView.Adapter<WordsAdapter.WordViewHolder>() {
 
     var words: MutableList<Word> = mutableListOf()
         set(value) {
@@ -20,6 +22,17 @@ class WordsAdapter(private val context: Context,
     // This class holds references to the views of item_word.xml
     inner class WordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvWord: TextView = itemView.findViewById(R.id.tvWord)
+
+        init {
+            itemView.setOnClickListener {
+                clickListener(words[adapterPosition])
+            }
+
+            // Setting up long click listener
+            itemView.setOnLongClickListener {
+                longClickListener(words[adapterPosition])
+            }
+        }
     }
 
     // Inflates the item layout, and creates a WordViewHolder with this layout
@@ -32,11 +45,6 @@ class WordsAdapter(private val context: Context,
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
         val word = words[position]
         holder.tvWord.text = word.term
-
-        // Set the onClick listener for the word
-        holder.itemView.setOnClickListener {
-            clickListener(word)
-        }
     }
 
     // Returns the size of the words list
