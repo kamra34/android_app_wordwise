@@ -6,6 +6,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.widget.ImageView
 
 class LanguageSelectionActivity : AppCompatActivity() {
+    override fun startActivity(intent: Intent?) {
+        super.startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
