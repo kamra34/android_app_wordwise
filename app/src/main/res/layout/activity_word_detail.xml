@@ -2,48 +2,74 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_material_light">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
+        android:elevation="4dp"
         app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize">
+        android:layout_marginTop="?attr/actionBarSize"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingTop="16dp">
 
-            <EditText
-                android:id="@+id/etWordDetailTerm"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:hint="Enter word"
-                android:inputType="none"
-                android:focusable="false"
-                android:clickable="false"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="8dp"
+                app:boxBackgroundMode="outline"
+                app:hintEnabled="true"
+                android:hint="word">
 
-            <EditText
-                android:id="@+id/etWordDetailDefinition"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etWordDetailTerm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:clickable="false" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:hint="Enter definition"
-                android:editable="false"
-                android:inputType="text"
-                android:layout_marginTop="16dp" />
+                android:layout_weight="1"
+                android:layout_marginTop="16dp"
+                app:boxBackgroundMode="outline"
+                app:hintEnabled="true"
+                android:hint="Enter definitions, synonyms, examples, etc.">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etWordDetailDefinition"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:inputType="textMultiLine"
+                    android:lines="10"
+                    android:maxLines="12"
+                    android:minLines="10"
+                    android:gravity="top|start"
+                    android:scrollbars="vertical"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:clickable="false" />
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 

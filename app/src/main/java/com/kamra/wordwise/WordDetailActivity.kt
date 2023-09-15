@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 import android.widget.EditText
 import kotlinx.coroutines.Dispatchers
@@ -50,13 +49,27 @@ class WordDetailActivity : AppCompatActivity() {
                     // Save the word to the database
                     updateWordInDatabase(etWordDetailTerm.text.toString(), etWordDetailDefinition.text.toString())
                     isEditable = false
-                    etWordDetailTerm.isEnabled = false
-                    etWordDetailDefinition.isEnabled = false
+
+                    etWordDetailTerm.isFocusable = false
+                    etWordDetailTerm.isFocusableInTouchMode = false
+                    etWordDetailTerm.isClickable = false
+
+                    etWordDetailDefinition.isFocusable = false
+                    etWordDetailDefinition.isFocusableInTouchMode = false
+                    etWordDetailDefinition.isClickable = false
+
                     item.setIcon(android.R.drawable.ic_menu_edit) // change icon to edit icon
                 } else {
                     isEditable = true
-                    etWordDetailTerm.isEnabled = true
-                    etWordDetailDefinition.isEnabled = true
+
+                    etWordDetailTerm.isFocusable = true
+                    etWordDetailTerm.isFocusableInTouchMode = true
+                    etWordDetailTerm.isClickable = true
+
+                    etWordDetailDefinition.isFocusable = true
+                    etWordDetailDefinition.isFocusableInTouchMode = true
+                    etWordDetailDefinition.isClickable = true
+
                     item.setIcon(android.R.drawable.ic_menu_save)
                 }
                 return true

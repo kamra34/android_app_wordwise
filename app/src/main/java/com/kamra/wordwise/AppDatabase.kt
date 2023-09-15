@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [Word::class], version = 2, exportSchema = false)
+@Database(entities = [Word::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun wordDao(): WordDao
@@ -30,7 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        suspend fun populateDatabase(wordDao: WordDao) {
+         fun populateDatabase(wordDao: WordDao) {
             Log.d("AppDatabase", "Inside populateDatabase()")
             // Preload words from DataSource
             val swedishWords = DataSource.preloadedSwedishWords
