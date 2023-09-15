@@ -154,11 +154,13 @@ class MainActivity : AppCompatActivity() {
             db.wordDao().getWordsByLanguage(chosenLanguage).observe(this) { words ->
                 wordsAdapter.words = words.toMutableList()
                 wordsAdapter.notifyDataSetChanged()
+                Log.d("MainActivity", "Words count for $chosenLanguage: ${words.size}")
             }
         } else {
             db.wordDao().getAllWords().observe(this) { words ->
                 wordsAdapter.words = words.toMutableList()
                 wordsAdapter.notifyDataSetChanged()
+                Log.d("MainActivity", "Total words count: ${words.size}")
             }
         }
     }
