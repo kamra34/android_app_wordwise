@@ -9,10 +9,10 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="@drawable/gradient_background"
         android:elevation="4dp"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -40,6 +40,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="24sp"
+                    android:textColor="@color/black"
                     android:inputType="none"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
@@ -59,7 +60,8 @@
                     android:id="@+id/etWordDetailDefinition"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
+                    android:textSize="24sp"
+                    android:textColor="@color/black"
                     android:inputType="textMultiLine"
                     android:lines="10"
                     android:maxLines="12"
