@@ -30,4 +30,9 @@ interface WordDao {
 
     @Delete
     fun delete(word: Word)
+
+    @Query("SELECT * FROM word_table WHERE language = :language ORDER BY RANDOM() LIMIT 5")
+    fun getRandomWords(language: String): LiveData<List<Word>>
+
+
 }

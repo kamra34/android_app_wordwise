@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import android.util.Log
+import android.view.Menu
+import android.view.View
+import android.widget.Button
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var wordsAdapter: WordsAdapter
     private lateinit var chosenLanguage: String
+    private var isRandomMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("MainActivity", "Inside onCreate()")
@@ -50,6 +54,14 @@ class MainActivity : AppCompatActivity() {
                 true
             })
 
+        val randomButton: FloatingActionButton = findViewById(R.id.btn_random)
+        randomButton.visibility = View.GONE
+        randomButton.setOnClickListener {
+            isRandomMode = true
+            getWords() // This will fetch random words
+            supportActionBar?.title = "Random Words"
+        }
+
         val actionBar = supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -63,6 +75,12 @@ class MainActivity : AppCompatActivity() {
 
         getWords()
     }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.shuffle_menu, menu)  // If you created a new menu file. Otherwise, use R.menu.edit_menu if you added to existing one.
+        return true
+    }
+
     private fun showWordOptionsDialog(word: Word) {
         AlertDialog.Builder(this)
             .setTitle("Choose an action")
@@ -138,7 +156,20 @@ class MainActivity : AppCompatActivity() {
 
         return when (item.itemId) {
             android.R.id.home -> {
-                onBackPressed()
+                if (isRandomMode) {
+                    isRandomMode = false
+                    getWords() // Load all words
+                    supportActionBar?.title = "Select Language" // Reset title
+                    true
+                } else {
+                    onBackPressed()
+                    true
+                }
+            }
+            R.id.action_shuffle -> {   // Handle the shuffle action here
+                isRandomMode = true
+                getWords() // This will fetch random words
+                supportActionBar?.title = "Random Words"
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -146,24 +177,44 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getWords() {
-        Log.d("MainActivity", "Inside getWords()")
         val db = AppDatabase.getDatabase(this)
-        Log.d("MainActivity", "After getDB()")
 
-        if (chosenLanguage.isNotEmpty()) {
-            db.wordDao().getWordsByLanguage(chosenLanguage).observe(this) { words ->
+        if (isRandomMode) {
+            db.wordDao().getRandomWords(chosenLanguage).observe(this) { words ->
                 wordsAdapter.words = words.toMutableList()
                 wordsAdapter.notifyDataSetChanged()
-                Log.d("MainActivity", "Words count for $chosenLanguage: ${words.size}")
             }
         } else {
-            db.wordDao().getAllWords().observe(this) { words ->
-                wordsAdapter.words = words.toMutableList()
-                wordsAdapter.notifyDataSetChanged()
-                Log.d("MainActivity", "Total words count: ${words.size}")
+            if (chosenLanguage.isNotEmpty()) {
+                db.wordDao().getWordsByLanguage(chosenLanguage).observe(this) { words ->
+                    wordsAdapter.words = words.toMutableList()
+                    wordsAdapter.notifyDataSetChanged()
+
+                    // Check if there are less than 5 words
+                    val randomButton: FloatingActionButton  = findViewById(R.id.btn_random)
+                    if (words.size < 5) {
+                        randomButton.isEnabled = false
+                        randomButton.setOnClickListener {
+                            Toast.makeText(this, "There are not enough words to select.", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        randomButton.isEnabled = true
+                        randomButton.setOnClickListener {
+                            isRandomMode = true
+                            getWords() // This will fetch random words
+                            supportActionBar?.title = "Random Words"
+                        }
+                    }
+                }
+            } else {
+                db.wordDao().getAllWords().observe(this) { words ->
+                    wordsAdapter.words = words.toMutableList()
+                    wordsAdapter.notifyDataSetChanged()
+                }
             }
         }
     }
+
 
     private fun openAddWordDialog() {
         val dialog = AlertDialog.Builder(this)

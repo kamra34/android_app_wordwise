@@ -14,13 +14,28 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_random"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="3dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_magic_wand"
+        app:tint="@android:color/white"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:contentDescription="@string/get_random_words" />
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/main_toolbar"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_random"
         android:background="#FAFAFA"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_word"
