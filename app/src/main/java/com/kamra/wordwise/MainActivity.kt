@@ -18,12 +18,15 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.appcompat.widget.SearchView
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var wordsAdapter: WordsAdapter
     private lateinit var chosenLanguage: String
     private var isRandomMode = false
+    private lateinit var originalWordList: List<Word>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("MainActivity", "Inside onCreate()")
@@ -77,8 +80,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.shuffle_menu, menu)  // If you created a new menu file. Otherwise, use R.menu.edit_menu if you added to existing one.
+        menuInflater.inflate(R.menu.shuffle_menu, menu)
+
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterWords(newText.orEmpty())
+                return true
+            }
+        })
         return true
+    }
+
+    private fun filterWords(query: String) {
+        Log.d("Filtering", "Original Words: ${originalWordList.joinToString { it.term }}")
+        val filteredWords = originalWordList.filter {
+            it.term.contains(query, ignoreCase = true)
+        }
+        Log.d("Filtering", "Filtered Words: ${filteredWords.joinToString { it.term }}")
+        wordsAdapter.updateWords(filteredWords)
     }
 
     private fun showWordOptionsDialog(word: Word) {
@@ -181,12 +207,14 @@ class MainActivity : AppCompatActivity() {
 
         if (isRandomMode) {
             db.wordDao().getRandomWords(chosenLanguage).observe(this) { words ->
+                originalWordList = words
                 wordsAdapter.words = words.toMutableList()
                 wordsAdapter.notifyDataSetChanged()
             }
         } else {
             if (chosenLanguage.isNotEmpty()) {
                 db.wordDao().getWordsByLanguage(chosenLanguage).observe(this) { words ->
+                    originalWordList = words
                     wordsAdapter.words = words.toMutableList()
                     wordsAdapter.notifyDataSetChanged()
 
@@ -208,6 +236,7 @@ class MainActivity : AppCompatActivity() {
                 }
             } else {
                 db.wordDao().getAllWords().observe(this) { words ->
+                    originalWordList = words
                     wordsAdapter.words = words.toMutableList()
                     wordsAdapter.notifyDataSetChanged()
                 }

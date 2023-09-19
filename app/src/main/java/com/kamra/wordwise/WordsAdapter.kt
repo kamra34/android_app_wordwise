@@ -10,8 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 class WordsAdapter(
     private val context: Context,
     private val clickListener: (Word) -> Unit,
-    private val longClickListener: (Word) -> Boolean
-) : RecyclerView.Adapter<WordsAdapter.WordViewHolder>() {
+    private val longClickListener: (Word) -> Boolean) : RecyclerView.Adapter<WordsAdapter.WordViewHolder>() {
 
     var words: MutableList<Word> = mutableListOf()
         set(value) {
@@ -24,14 +23,22 @@ class WordsAdapter(
 
         init {
             itemView.setOnClickListener {
-                clickListener(words[adapterPosition])
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    clickListener(words[position])
+                }
             }
 
             itemView.setOnLongClickListener {
-                longClickListener(words[adapterPosition])
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    longClickListener(words[position])
+                }
+                true
             }
         }
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.item_word, parent, false)
@@ -46,4 +53,11 @@ class WordsAdapter(
     override fun getItemCount(): Int {
         return words.size
     }
+
+    fun updateWords(newWords: List<Word>) {
+        words.clear()
+        words.addAll(newWords)
+        notifyDataSetChanged()
+    }
+
 }
